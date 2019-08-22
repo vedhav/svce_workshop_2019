@@ -8,8 +8,7 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(knitr)
-library(ggplot2)
-library(dplyr)
+library(tidyverse)
 library(plotly)
 library(DBI)
 ```
@@ -124,11 +123,91 @@ education_summary <- data %>% group_by(education) %>% summarise(number_of_rich_p
 education_summary
 ```
 
+## Hypothesis 2
+
+People who work under government are likely to make more money
+
+## Hypothesis 3
+
+People who work more make more money
+
+## Hypothesis 4
+
+Men make more money than Women?
+
+## Hypothesis 5
 
 
+## Hypothesis 6
+
+### Predicting the salary
+
+There are many ways to predict a variable, depending on the data type.
+<br/>
+If the variable you need to predict is a number, you need to use **regression**
+<br/>
+If the variable you need to predict is a categorical, you need to use **classification**
+<br/>
+Some famous *regression algorithms* are:
+
+* Linear Regression
+* Logistic Regression
+* Polynomial Regression
+* Stepwise Regression
+* Ridge Regression
+* Lasso Regression
+* ElasticNet Regression
+
+Some famous *classification algorithms* are:
+
+* Naive Bayes Classifier
+* Nearest Neighbor
+* Support Vector Machines
+* Decision Trees
+* Boosted Trees
+* Random Forest
+* Neural Networks
+
+All algorithms will generate a model/formula, Creating the model is often refered to as training
+<br/>
+You can store the models in a variable and use them later on to predict.
+<br/>
+
+#### Using Naive Bayes Classifier
+
+```{r}
+library(e1071)
+naive_bayes_model <- naiveBayes(predictive_variable ~ ., data = data)
+predicted_values_from_naive_bayes_model <- predict(naive_bayes_model, data)
+tab <- table(predicted_values_from_naive_bayes_model,data$predictive_variable)
+print(tab)
+1 - sum(diag(tab)) / sum(tab)
+```
 
 
+#### Using Decision Tree
 
+```{r}
+library(party)
+decision_tree_model <- ctree(predictive_variable ~ ., data = data)
+plot(decision_tree_model)
+predicted_values_from_decision_tree_model <- predict(decision_tree_model, data)
+tab <- table(predicted_values_from_decision_tree_model,data$predictive_variable)
+print(tab)
+1 - sum(diag(tab)) / sum(tab)
+```
+
+#### Using Random Forest
+
+```{r}
+library(randomForest)
+random_forest_model <- randomForest(predictive_variable ~ ., data = data)
+plot(random_forest_model)
+predicted_values_from_random_forest_model <- predict(random_forest_model, data)
+tab <- table(predicted_values_from_random_forest_model,data$predictive_variable)
+print(tab)
+1 - sum(diag(tab)) / sum(tab)
+```
 
 # Publishing the insights
 
