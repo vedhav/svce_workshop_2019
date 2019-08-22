@@ -1,0 +1,140 @@
+---
+title: "SVCE"
+author: "ZoomRx"
+date: "22/08/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(knitr)
+library(ggplot2)
+library(dplyr)
+library(plotly)
+library(DBI)
+```
+
+
+![](ds_workflow.png)
+
+# Acquiring the data
+
+Data can be acquired from many sources into R.
+R supports data formats like csv, xlsx, spss, sas or any remote database like MySQL, SQLite, PostgreSQL, MonetDB, etc
+
+The most used methods are to read data from a csv, xlxs or txt file or connecting to MySQL or SQLite data base
+
+### Reading local data
+
+We can read a .csv data using the base **read.csv()** function or using **read_csv()** function from the **readr** package
+
+
+More anout this dataset here http://cseweb.ucsd.edu/classes/sp15/cse190-c/reports/sp15/048.pdf
+```{r}
+data <- read.csv("datasets/adult_data.csv")
+names(data) <- c("age", "workclass", "fnlwgt", "education", "education_num", "marital_status", "occupation", "relationship", "race", "gender", "capital_gain", "capital_loss", "hours_per_week", "native_country", "predictive_variable")
+head(data)
+```
+
+In order to obtain data from remote database like **SQLLite**
+First we need to establish a connection to the database
+```{r}
+con <- dbConnect(RSQLite::SQLite(), dbname = ":memory:")
+```
+```{r echo = FALSE}
+dbWriteTable(con, "mtcars", mtcars, overwrite = TRUE)
+dbWriteTable(con, "iris", iris, overwrite = TRUE)
+```
+Then we can use this connection object to access and edit the database
+```{r}
+dbListTables(con)
+mtcarsData <- dbReadTable(con, "mtcars")
+str(mtcarsData)
+dbDisconnect(con)
+```
+
+# Cleaning the data
+
+In the real world the data is not always "clean".
+There are many ways to define clean.
+Common things to look out for:
+
+* Look out for **NULL** or **NA** values
+* Check if there are **duplicates**
+* Verify the **data type** for every column/feature
+
+
+# Understanding the data
+
+### **Understand every column of the data first**
+
+#### Numerical data fields
+**Age**
+```{r}
+ggplot(data, aes(x = data$age)) + geom_bar()
+```
+
+**Hours worked per week**
+```{r}
+ggplot(data, aes(x = data$hours_per_week)) + geom_histogram(binwidth=10)
+```
+
+### Categorical data fields
+
+**Marital Status**
+```{r}
+data %>% group_by(marital_status) %>% summarise(count = n())
+ggplotly(ggplot(data %>% group_by(marital_status) %>% summarise(count = n()), aes(x = reorder(marital_status, count), y = count)) + geom_col() + coord_flip())
+```
+
+**Education**
+```{r}
+ggplotly(ggplot(data %>% group_by(education) %>% summarise(count = n()), aes(x = reorder(education, count), y = count)) + geom_col() + coord_flip())
+```
+**Occupation**
+```{r}
+ggplotly(ggplot(data %>% group_by(occupation) %>% summarise(count = n()), aes(x = reorder(occupation, count), y = count)) + geom_col() + coord_flip())
+```
+**Relationship**
+```{r}
+ggplotly(ggplot(data %>% group_by(relationship) %>% summarise(count = n()), aes(x = reorder(relationship, count), y = count)) + geom_col() + coord_flip())
+```
+**Race**
+```{r}
+ggplotly(ggplot(data %>% group_by(race) %>% summarise(count = n()), aes(x = reorder(race, count), y = count)) + geom_col() + coord_flip())
+```
+**Gender**
+```{r}
+ggplotly(ggplot(data %>% group_by(gender) %>% summarise(count = n()), aes(x = reorder(gender, count), y = count)) + geom_col() + coord_flip())
+```
+**Native Country**
+```{r}
+ggplotly(ggplot(data %>% group_by(native_country) %>% summarise(count = n()), aes(x = reorder(native_country, count), y = count)) + geom_col() + coord_flip())
+```
+
+### **Now try to make hypothesis and test them**
+
+## Hypothesis 1
+
+People who study more make more money
+
+```{r}
+data$is_rich <- if_else(data$predictive_variable == "<=50K", 0, 1)
+education_summary <- data %>% group_by(education) %>% summarise(number_of_rich_people = sum(is_rich), number_of_poor_people = n() - number_of_rich_people, total_people = n())
+education_summary
+```
+
+
+
+
+
+
+
+# Publishing the insights
+
+
+
+# Example one
+
+
+# Exercise problem
