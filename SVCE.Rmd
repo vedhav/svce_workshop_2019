@@ -1,8 +1,10 @@
 ---
-title: "SVCE"
+title: "SVCE R Workshop 2019"
 author: "ZoomRx"
 date: "22/08/2019"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -16,11 +18,11 @@ library(DBI)
 
 # Which companies use R
 <br/>
-<img src="www/facebook.png" alt="drawing" width = "60px" height = "60px"/>  **For behavior analysis related to status updates and profile pictures.**
-<br>
 <img src="www/google.jpg" alt="drawing" width = "60px" height = "60px"/>  **For advertising effectiveness and economic forecasting.**
 <br>
 <img src="www/microsoft.jpg" alt="drawing" width = "60px" height = "60px"/>  **Acquired Revolution R company and use it for a various purposes.**
+<br>
+<img src="www/facebook.png" alt="drawing" width = "60px" height = "60px"/>  **For behavior analysis related to status updates and profile pictures.**
 <br>
 <img src="www/twitter.png" alt="drawing" width = "60px" height = "60px"/>  **For data visualization and semantic clustering.**
 <br>
@@ -126,6 +128,11 @@ Common things to look out for:
 
 
 # Understanding the data
+
+```{r}
+str(data)
+summary(data)
+```
 
 ### **Understand every column of the data first**
 
@@ -247,8 +254,8 @@ Men make more money than Women?
 
 ```{r}
 ggplot(data, aes(x = gender, fill = predictive_variable)) + geom_bar(stat = "count")
-gender_summary <- data %>%
-	
+# gender_summary <- data %>%
+
 ```
 
 
@@ -263,4 +270,197 @@ gender_summary <- data %>%
 
 ```{r}
 
+```
+
+### Predicting the salary
+
+There are many ways to predict a variable, depending on the data type.
+<br/>
+If the variable you need to predict is a number, you need to use **regression**
+<br/>
+If the variable you need to predict is a categorical, you need to use **classification**
+<br/>
+Some famous *regression algorithms* are:
+
+* Linear Regression
+* Logistic Regression
+* Polynomial Regression
+* Stepwise Regression
+
+Some famous *classification algorithms* are:
+
+* Naive Bayes Classifier
+* Nearest Neighbor
+* Decision Trees
+* Random Forest
+* Neural Networks
+
+All algorithms will generate a model/formula, Creating the model is often refered to as training
+<br/>
+You can store the models in a variable and use them later on to predict.
+<br/>
+
+#### Using Naive Bayes Classifier
+
+```{r}
+# library(e1071)
+# naive_bayes_model <- naiveBayes(predictive_variable ~ ., data = data)
+# predicted_values_from_naive_bayes_model <- predict(naive_bayes_model, data)
+# tab <- table(predicted_values_from_naive_bayes_model,data$predictive_variable)
+# print(tab)
+# 1 - sum(diag(tab)) / sum(tab)
+```
+
+
+#### Using Decision Tree
+
+```{r}
+# library(party)
+# decision_tree_model <- ctree(predictive_variable ~ ., data = data)
+# predicted_values_from_decision_tree_model <- predict(decision_tree_model, data)
+# tab <- table(predicted_values_from_decision_tree_model,data$predictive_variable)
+# print(tab)
+# 1 - sum(diag(tab)) / sum(tab)
+```
+
+#### Using Random Forest
+
+```{r}
+# library(randomForest)
+# random_forest_model <- randomForest(predictive_variable ~ ., data = data)
+# plot(random_forest_model)
+# predicted_values_from_random_forest_model <- predict(random_forest_model, data)
+# tab <- table(predicted_values_from_random_forest_model,data$predictive_variable)
+# print(tab)
+# 1 - sum(diag(tab)) / sum(tab)
+```
+
+# Publishing the insights
+<br>
+<img src="www/rmarkdown.png" alt="drawing" width = "60px" height = "60px"/>  **Rmarkdown allows you to create reproducible results that can be shared as a HTML, PDF, PPT or Word format.**
+<br>
+<img src="www/shiny.jpg" alt="drawing" width = "60px" height = "60px"/>  **Shiny allows you to create interactive web applications.**
+<br>
+
+
+# Exercise problem
+<br/>
+
+### Analyze iris dataset and  come up with interesting insights about the data. Also predict the Species of these data points
+
+```{r}
+newData <- data.frame(
+    Sepal.Length = c(5.7, 6.3, 7.2),
+    Sepal.Width = c(4.4, 2.9, 3.1),
+    Petal.Length = c(1.4, 4.0, 5.1),
+    Petal.Width = c(0.2, 1.0, 2.3),
+    Species = ""
+)
+newData
+```
+
+
+#### Numeric Data
+
+##### Sepal.Length
+
+```{r}
+ggplot(iris, aes(x = Sepal.Length)) + geom_histogram()
+```
+
+##### Sepal.Length
+
+```{r}
+ggplot(iris, aes(x = Sepal.Length)) + geom_histogram()
+```
+
+##### Sepal.Length
+
+```{r}
+ggplot(iris, aes(x = Sepal.Length)) + geom_histogram()
+```
+
+##### Sepal.Length
+
+```{r}
+ggplot(iris, aes(x = Sepal.Length)) + geom_histogram()
+```
+
+
+#### Categorical Data
+
+##### Species
+
+```{r}
+ggplotly(ggplot(iris %>% group_by(Species) %>% summarise(count = n()), aes(x = reorder(Species, count), y = count)) + geom_col() + coord_flip())
+```
+
+#### Using only one variable to determine the type of species 
+
+#### Trying to understand the relationships between two variables
+
+##### Sepal length and Sepal width
+
+```{r}
+ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width)) + geom_point()
+ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width, color = Species)) + geom_point()
+```
+
+
+##### Sepal length and Petal length
+
+```{r}
+ggplot(iris, aes(x = Sepal.Length, y = Petal.Length, color = Species)) + geom_point()
+```
+
+##### Sepal length and Petal width
+
+```{r}
+ggplot(iris, aes(x = Sepal.Length, y = Petal.Width, color = Species)) + geom_point()
+```
+
+
+##### Sepal width and Petal length
+
+```{r}
+ggplot(iris, aes(x = Sepal.Width, y = Petal.Length, color = Species)) + geom_point()
+```
+
+
+##### Sepal width and Petal width
+
+```{r}
+ggplot(iris, aes(x = Sepal.Width, y = Petal.Width, color = Species)) + geom_point()
+```
+
+
+##### Petal length and Petal width
+
+```{r}
+ggplot(iris, aes(x = Petal.Length, y = Petal.Width, color = Species)) + geom_point()
+```
+
+
+
+### Predict the Species of these corresponding data
+
+```{r}
+actual_species <- c("setosa", "versicolor", "virginica")
+newData
+```
+
+#### Using Naive Bayes Classifier
+
+```{r}
+# library(e1071)
+# naive_bayes_model <- naiveBayes(Species ~ ., data = iris)
+# predicted_values_from_naive_bayes_model <- predict(naive_bayes_model, iris)
+# tab <- table(predicted_values_from_naive_bayes_model,iris$Species)
+# print(tab)
+# 1 - sum(diag(tab)) / sum(tab)
+# # Predicting the a newData
+# answer <- predict(naive_bayes_model, newData)
+# tab <- table(answer,actual_species)
+# print(tab)
+# 1 - sum(diag(tab)) / sum(tab)
 ```
