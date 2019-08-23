@@ -14,7 +14,44 @@ library(DBI)
 ```
 
 
-![](ds_workflow.png)
+# Which companies use R
+<br/>
+<img src="www/facebook.png" alt="drawing" width = "60px" height = "60px"/>  **For behavior analysis related to status updates and profile pictures**
+<br>
+<img src="www/google.jpg" alt="drawing" width = "60px" height = "60px"/>  **For advertising effectiveness and economic forecasting.**
+<br>
+<img src="www/microsoft.jpg" alt="drawing" width = "60px" height = "60px"/>  **Acquired Revolution R company and use it for a variety of purposes.**
+<br>
+<img src="www/twitter.png" alt="drawing" width = "60px" height = "60px"/>  **For data visualization and semantic clustering.**
+<br>
+<img src="www/uber.jpg" alt="drawing" width = "60px" height = "60px"/>  **For statistical analysis**
+<br>
+<img src="www/airbnb.jpg" alt="drawing" width = "60px" height = "60px"/>  **Scale data science.**
+<br>
+<img src="www/zoomrx.png" alt="drawing" width = "60px" height = "60px"/>  ****
+<br>
+And many more...
+
+# Why use R, Even python can do all this stuff
+
+Think of R like a cat!
+<br>
+And  Python like dog!
+<br>
+Both are great pets to have, Some people like one over the other. But at the end of the day both are amazing
+<br>
+The problem starts when someone looks at R and expects it to be a dog
+<br>
+**"You're dog is broken!"**
+<br>
+R has some strange parts, but it compenstates with some great parts. They are not just good, but great
+<br>
+Some parts of R are better than python and some parts of python are better than R.
+<br>
+
+![](www/belief_vs_reality.jpg)
+
+![](www/ds_workflow.png)
 
 # Acquiring the data
 
@@ -82,8 +119,11 @@ ggplot(data, aes(x = data$hours_per_week)) + geom_histogram(binwidth=10)
 
 **Marital Status**
 ```{r}
-data %>% group_by(marital_status) %>% summarise(count = n())
-ggplotly(ggplot(data %>% group_by(marital_status) %>% summarise(count = n()), aes(x = reorder(marital_status, count), y = count)) + geom_col() + coord_flip())
+data_marital_status <- data %>% group_by(marital_status) %>% summarise(count = n())
+ggplotly(ggplot(data_marital_status, aes(x = reorder(marital_status, count), y = count)) + geom_col() + coord_flip())
+ggplot(data_marital_status, aes(x = "", y = count, fill = reorder(marital_status, - count)))+
+	geom_bar(width = 1, stat = "identity") +
+	coord_polar("y", start=0)
 ```
 
 **Education**
@@ -190,7 +230,6 @@ print(tab)
 ```{r}
 library(party)
 decision_tree_model <- ctree(predictive_variable ~ ., data = data)
-plot(decision_tree_model)
 predicted_values_from_decision_tree_model <- predict(decision_tree_model, data)
 tab <- table(predicted_values_from_decision_tree_model,data$predictive_variable)
 print(tab)
@@ -210,10 +249,131 @@ print(tab)
 ```
 
 # Publishing the insights
-
-
-
-# Example one
+<br>
+<img src="www/rmarkdown.png" alt="drawing" width = "60px" height = "60px"/>  **Rmarkdown allows you to create reproducible results that can be shared as a HTML, PDF, PPT or Word format.**
+<br>
+<img src="www/shiny.jpg" alt="drawing" width = "60px" height = "60px"/>  **Shiny allows you to create interactive web applications.**
+<br>
 
 
 # Exercise problem
+<br/>
+
+### Analyze iris dataset and  come up with interesting insights about the data. Also predict the Species of these data points
+
+```{r}
+newData <- data.frame(
+    Sepal.Length = c(5.7, 6.3, 7.2),
+    Sepal.Width = c(4.4, 2.9, 3.1),
+    Petal.Length = c(1.4, 4.0, 5.1),
+    Petal.Width = c(0.2, 1.0, 2.3),
+    Species = ""
+)
+newData
+```
+
+
+#### Numeric Data
+
+##### Sepal.Length
+
+```{r}
+ggplot(iris, aes(x = Sepal.Length)) + geom_histogram()
+```
+
+##### Sepal.Length
+
+```{r}
+ggplot(iris, aes(x = Sepal.Length)) + geom_histogram()
+```
+
+##### Sepal.Length
+
+```{r}
+ggplot(iris, aes(x = Sepal.Length)) + geom_histogram()
+```
+
+##### Sepal.Length
+
+```{r}
+ggplot(iris, aes(x = Sepal.Length)) + geom_histogram()
+```
+
+
+#### Categorical Data
+
+##### Species
+
+```{r}
+ggplotly(ggplot(iris %>% group_by(Species) %>% summarise(count = n()), aes(x = reorder(Species, count), y = count)) + geom_col() + coord_flip())
+```
+
+#### Using only one variable to determine the type of species 
+
+#### Trying to understand the relationships between two variables
+
+##### Sepal length and Sepal width
+
+```{r}
+ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width)) + geom_point()
+ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width, color = Species)) + geom_point()
+```
+
+
+##### Sepal length and Petal length
+
+```{r}
+ggplot(iris, aes(x = Sepal.Length, y = Petal.Length, color = Species)) + geom_point()
+```
+
+##### Sepal length and Petal width
+
+```{r}
+ggplot(iris, aes(x = Sepal.Length, y = Petal.Width, color = Species)) + geom_point()
+```
+
+
+##### Sepal width and Petal length
+
+```{r}
+ggplot(iris, aes(x = Sepal.Width, y = Petal.Length, color = Species)) + geom_point()
+```
+
+
+##### Sepal width and Petal width
+
+```{r}
+ggplot(iris, aes(x = Sepal.Width, y = Petal.Width, color = Species)) + geom_point()
+```
+
+
+##### Petal length and Petal width
+
+```{r}
+ggplot(iris, aes(x = Petal.Length, y = Petal.Width, color = Species)) + geom_point()
+```
+
+
+
+### Predict the Species of these corresponding data
+
+```{r}
+actual_species <- c("setosa", "versicolor", "virginica")
+newData
+```
+
+#### Using Naive Bayes Classifier
+
+```{r}
+library(e1071)
+naive_bayes_model <- naiveBayes(Species ~ ., data = iris)
+predicted_values_from_naive_bayes_model <- predict(naive_bayes_model, iris)
+tab <- table(predicted_values_from_naive_bayes_model,iris$Species)
+print(tab)
+1 - sum(diag(tab)) / sum(tab)
+# Predicting the a newData
+answer <- predict(naive_bayes_model, newData)
+tab <- table(answer,actual_species)
+print(tab)
+1 - sum(diag(tab)) / sum(tab)
+```
