@@ -1,21 +1,59 @@
 ---
-title: "SVCE"
+title: "SVCE R Workshop 2019"
 author: "ZoomRx"
 date: "22/08/2019"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(knitr)
-library(ggplot2)
-library(dplyr)
+library(tidyverse)
 library(plotly)
 library(DBI)
 ```
 
 
-![](ds_workflow.png)
+# Which companies use R
+<br/>
+<img src="www/google.jpg" alt="drawing" width = "60px" height = "60px"/>  **For advertising effectiveness and economic forecasting.**
+<br>
+<img src="www/microsoft.jpg" alt="drawing" width = "60px" height = "60px"/>  **Acquired Revolution R company and use it for a various purposes.**
+<br>
+<img src="www/facebook.png" alt="drawing" width = "60px" height = "60px"/>  **For behavior analysis related to status updates and profile pictures.**
+<br>
+<img src="www/twitter.png" alt="drawing" width = "60px" height = "60px"/>  **For data visualization and semantic clustering.**
+<br>
+<img src="www/uber.jpg" alt="drawing" width = "60px" height = "60px"/>  **For statistical analysis.**
+<br>
+<img src="www/airbnb.jpg" alt="drawing" width = "60px" height = "60px"/>  **Scale data science.**
+<br>
+<img src="www/zoomrx.png" alt="drawing" width = "60px" height = "60px"/>  **For data curation, analysis and visualisation.**
+<br>
+And many more...
+
+# Why use R, Even python can do all this stuff
+
+Think of R like a cat!
+<br>
+And  Python like dog!
+<br>
+Both are great pets to have, Some people like one over the other. But at the end of the day both are amazing
+<br>
+The problem starts when someone looks at R and expects it to be a dog
+<br>
+**"You're dog is broken!"**
+<br>
+R has some strange parts, but it compenstates with some great parts. They are not just good, but great
+<br>
+Some parts of R are better than python and some parts of python are better than R.
+<br>
+
+![](www/belief_vs_reality.jpg)
+
+![](www/ds_workflow.png)
 
 # Acquiring the data
 
@@ -23,13 +61,25 @@ Data can be acquired from many sources into R.
 R supports data formats like csv, xlsx, spss, sas or any remote database like MySQL, SQLite, PostgreSQL, MonetDB, etc
 
 The most used methods are to read data from a csv, xlxs or txt file or connecting to MySQL or SQLite data base
+<br>
+<img src="www/readr.png" alt="drawing" width = "60px" height = "60px"/>  **Used for obtaining rectangular data into R like "csv", "tsv", and "fwf"**
+<br>
+<img src="www/readxl.png" alt="drawing" width = "60px" height = "60px"/>  **Used to import excel files into R**
+<br>
+<img src="www/sparklyr.png" alt="drawing" width = "60px" height = "60px"/>  **R interface to Apache Spark to work with big data**
+<br>
+<img src="www/googledrive.png" alt="drawing" width = "60px" height = "60px"/>  **Manage Google Drive files from R.**
+<br>
+<img src="www/googlesheets.png" alt="drawing" width = "60px" height = "60px"/>  **Interact with Google Sheets from R.**
+<br>
+<img src="www/rvest.png" alt="drawing" width = "60px" height = "60px"/>  **This package is wrapped around the 'xml2' and 'httr' packages to make it easy to download and manipulate**
+<br>
 
 ### Reading local data
 
 We can read a .csv data using the base **read.csv()** function or using **read_csv()** function from the **readr** package
 
 
-More anout this dataset here http://cseweb.ucsd.edu/classes/sp15/cse190-c/reports/sp15/048.pdf
 ```{r}
 data <- read.csv("datasets/adult_data.csv")
 names(data) <- c("age", "workclass", "fnlwgt", "education", "education_num", "marital_status", "occupation", "relationship", "race", "gender", "capital_gain", "capital_loss", "hours_per_week", "native_country", "predictive_variable")
@@ -63,8 +113,26 @@ Common things to look out for:
 * Check if there are **duplicates**
 * Verify the **data type** for every column/feature
 
+<br>
+<img src="www/dplyr.png" alt="drawing" width = "60px" height = "60px"/>  **dplyr is one of the most used package for data wrangling in R**
+<br>
+<img src="www/tidyr.png" alt="drawing" width = "60px" height = "60px"/>  **Also a very popular package for data wrangling**
+<br>
+<img src="www/stringr.jpg" alt="drawing" width = "60px" height = "60px"/>  **Used for string manupulation**
+<br>
+<img src="www/lubridate.jpg" alt="drawing" width = "60px" height = "60px"/>  **Used to work with dates data**
+<br>
+<img src="www/hms.png" alt="drawing" width = "60px" height = "60px"/>  **Used to work with time data**
+<br>
+
+
 
 # Understanding the data
+
+```{r}
+str(data)
+summary(data)
+```
 
 ### **Understand every column of the data first**
 
@@ -83,8 +151,11 @@ ggplot(data, aes(x = data$hours_per_week)) + geom_histogram(binwidth=10)
 
 **Marital Status**
 ```{r}
-data %>% group_by(marital_status) %>% summarise(count = n())
-ggplotly(ggplot(data %>% group_by(marital_status) %>% summarise(count = n()), aes(x = reorder(marital_status, count), y = count)) + geom_col() + coord_flip())
+data_marital_status <- data %>% group_by(marital_status) %>% summarise(count = n())
+ggplotly(ggplot(data_marital_status, aes(x = reorder(marital_status, count), y = count)) + geom_col() + coord_flip())
+ggplot(data_marital_status, aes(x = "", y = count, fill = reorder(marital_status, - count)))+
+	geom_bar(width = 1, stat = "identity") +
+	coord_polar("y", start=0)
 ```
 
 **Education**
@@ -122,19 +193,274 @@ People who study more make more money
 data$is_rich <- if_else(data$predictive_variable == "<=50K", 0, 1)
 education_summary <- data %>% group_by(education) %>% summarise(number_of_rich_people = sum(is_rich), number_of_poor_people = n() - number_of_rich_people, total_people = n())
 education_summary
+print(unique(data$predictive_variable))
+print(unique(as.character(data$predictive_variable)))
+
+salary <- unique(as.character(data$predictive_variable))
+str_sub(salary, 2, str_length(salary))
+gsub(" ", "", salary)
+trimws(salary)
+salary
+
+library(microbenchmark)
+
+microbenchmark(str_sub(salary, 2, str_length(salary)), gsub(" ", "", salary), trimws(salary))
+salary <- str_sub(salary, 2, str_length(salary))
+salary
+
+data$predictive_variable <- str_sub(data$predictive_variable, 2, str_length(data$predictive_variable))
+
+data$is_rich <- if_else(data$predictive_variable == "<=50K", 0, 1)
+education_summary <- data %>% group_by(education) %>% summarise(number_of_rich_people = sum(is_rich), number_of_poor_people = n() - number_of_rich_people, total_people = n())
+education_summary
+
+education_data <- distinct(data %>% select(education, education_num)) %>% arrange(education_num)
+education_data
+
+data$is_rich <- if_else(data$predictive_variable == "<=50K", 0, 1)
+education_summary <- data %>%
+	group_by(education, education_num) %>%
+	summarise(percentage_of_rich_people = sum(is_rich) / n() * 100) %>%
+	arrange(education_num)
+education_summary
+ggplotly(ggplot(education_summary, aes(x = reorder(education, education_num), y = percentage_of_rich_people)) + geom_bar(stat = "identity") + coord_flip())
+ggplotly(ggplot(education_summary, aes(x = education_num, y = percentage_of_rich_people, color = education)) + geom_point())
+```
+
+## Hypothesis 2
+
+Let's just analyze which type of occupation makes more money
+
+```{r}
+occupation_summary <- data %>%
+	group_by(occupation) %>%
+	summarise(percentage_of_rich_people = sum(is_rich) / n() * 100) %>%
+	arrange(percentage_of_rich_people)
+occupation_summary
+ggplotly(ggplot(occupation_summary, aes(x = reorder(occupation, percentage_of_rich_people), y = percentage_of_rich_people)) + geom_bar(stat = "identity") + coord_flip())
+```
+
+## Hypothesis 3
+
+People who work more make more money
+
+```{r}
+ggplot(data, aes(x = hours_per_week, fill = predictive_variable)) + geom_histogram(binwidth = 10)
+```
+
+## Hypothesis 4
+
+Men make more money than Women?
+
+```{r}
+ggplot(data, aes(x = gender, fill = predictive_variable)) + geom_bar(stat = "count")
+# gender_summary <- data %>%
+
+```
+
+
+## Hypothesis 5
+
+```{r}
+
+```
+
+
+## Hypothesis 6
+
+```{r}
+
+```
+
+### Predicting the salary
+
+There are many ways to predict a variable, depending on the data type.
+<br/>
+If the variable you need to predict is a number, you need to use **regression**
+<br/>
+If the variable you need to predict is a categorical, you need to use **classification**
+<br/>
+Some famous *regression algorithms* are:
+
+* Linear Regression
+* Logistic Regression
+* Polynomial Regression
+* Stepwise Regression
+
+Some famous *classification algorithms* are:
+
+* Naive Bayes Classifier
+* Nearest Neighbor
+* Decision Trees
+* Random Forest
+* Neural Networks
+
+All algorithms will generate a model/formula, Creating the model is often refered to as training
+<br/>
+You can store the models in a variable and use them later on to predict.
+<br/>
+
+#### Using Naive Bayes Classifier
+
+```{r}
+# library(e1071)
+# naive_bayes_model <- naiveBayes(predictive_variable ~ ., data = data)
+# predicted_values_from_naive_bayes_model <- predict(naive_bayes_model, data)
+# tab <- table(predicted_values_from_naive_bayes_model,data$predictive_variable)
+# print(tab)
+# 1 - sum(diag(tab)) / sum(tab)
+```
+
+
+#### Using Decision Tree
+
+```{r}
+# library(party)
+# decision_tree_model <- ctree(predictive_variable ~ ., data = data)
+# predicted_values_from_decision_tree_model <- predict(decision_tree_model, data)
+# tab <- table(predicted_values_from_decision_tree_model,data$predictive_variable)
+# print(tab)
+# 1 - sum(diag(tab)) / sum(tab)
+```
+
+#### Using Random Forest
+
+```{r}
+# library(randomForest)
+# random_forest_model <- randomForest(predictive_variable ~ ., data = data)
+# plot(random_forest_model)
+# predicted_values_from_random_forest_model <- predict(random_forest_model, data)
+# tab <- table(predicted_values_from_random_forest_model,data$predictive_variable)
+# print(tab)
+# 1 - sum(diag(tab)) / sum(tab)
+```
+
+# Publishing the insights
+<br>
+<img src="www/rmarkdown.png" alt="drawing" width = "60px" height = "60px"/>  **Rmarkdown allows you to create reproducible results that can be shared as a HTML, PDF, PPT or Word format.**
+<br>
+<img src="www/shiny.jpg" alt="drawing" width = "60px" height = "60px"/>  **Shiny allows you to create interactive web applications.**
+<br>
+
+
+# Exercise problem
+<br/>
+
+### Analyze iris dataset and  come up with interesting insights about the data. Also predict the Species of these data points
+
+```{r}
+newData <- data.frame(
+    Sepal.Length = c(5.7, 6.3, 7.2),
+    Sepal.Width = c(4.4, 2.9, 3.1),
+    Petal.Length = c(1.4, 4.0, 5.1),
+    Petal.Width = c(0.2, 1.0, 2.3),
+    Species = ""
+)
+newData
+```
+
+
+#### Numeric Data
+
+##### Sepal.Length
+
+```{r}
+ggplot(iris, aes(x = Sepal.Length)) + geom_histogram()
+```
+
+##### Sepal.Length
+
+```{r}
+ggplot(iris, aes(x = Sepal.Length)) + geom_histogram()
+```
+
+##### Sepal.Length
+
+```{r}
+ggplot(iris, aes(x = Sepal.Length)) + geom_histogram()
+```
+
+##### Sepal.Length
+
+```{r}
+ggplot(iris, aes(x = Sepal.Length)) + geom_histogram()
+```
+
+
+#### Categorical Data
+
+##### Species
+
+```{r}
+ggplotly(ggplot(iris %>% group_by(Species) %>% summarise(count = n()), aes(x = reorder(Species, count), y = count)) + geom_col() + coord_flip())
+```
+
+#### Using only one variable to determine the type of species 
+
+#### Trying to understand the relationships between two variables
+
+##### Sepal length and Sepal width
+
+```{r}
+ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width)) + geom_point()
+ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width, color = Species)) + geom_point()
+```
+
+
+##### Sepal length and Petal length
+
+```{r}
+ggplot(iris, aes(x = Sepal.Length, y = Petal.Length, color = Species)) + geom_point()
+```
+
+##### Sepal length and Petal width
+
+```{r}
+ggplot(iris, aes(x = Sepal.Length, y = Petal.Width, color = Species)) + geom_point()
+```
+
+
+##### Sepal width and Petal length
+
+```{r}
+ggplot(iris, aes(x = Sepal.Width, y = Petal.Length, color = Species)) + geom_point()
+```
+
+
+##### Sepal width and Petal width
+
+```{r}
+ggplot(iris, aes(x = Sepal.Width, y = Petal.Width, color = Species)) + geom_point()
+```
+
+
+##### Petal length and Petal width
+
+```{r}
+ggplot(iris, aes(x = Petal.Length, y = Petal.Width, color = Species)) + geom_point()
 ```
 
 
 
+### Predict the Species of these corresponding data
 
+```{r}
+actual_species <- c("setosa", "versicolor", "virginica")
+newData
+```
 
+#### Using Naive Bayes Classifier
 
-
-# Publishing the insights
-
-
-
-# Example one
-
-
-# Exercise problem
+```{r}
+# library(e1071)
+# naive_bayes_model <- naiveBayes(Species ~ ., data = iris)
+# predicted_values_from_naive_bayes_model <- predict(naive_bayes_model, iris)
+# tab <- table(predicted_values_from_naive_bayes_model,iris$Species)
+# print(tab)
+# 1 - sum(diag(tab)) / sum(tab)
+# # Predicting the a newData
+# answer <- predict(naive_bayes_model, newData)
+# tab <- table(answer,actual_species)
+# print(tab)
+# 1 - sum(diag(tab)) / sum(tab)
+```
